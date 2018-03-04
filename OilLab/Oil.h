@@ -16,14 +16,14 @@ class Well;
 class OilField
 {
 private:
-	list<Well> _wells;
+	list<Well*> _wells;
 	double _gasVolume;
 	double _oilVolume;
 	double _waterVolume;
 	double _capacity;
 	int _idCounter = 0; bool TryStartOrStopWell(int id, bool start);
 public:
-	OilField(double gasV, double oilV, double waterV);
+	OilField(double gasV = 20.0, double oilV = 30.0, double waterV = 0.0);
 	double GetGasVolume();
 	double GetOilVolume();
 	double GetWaterVolume();
@@ -31,7 +31,7 @@ public:
 	bool TryIncreaseWaterVolume(double val);
 
 	//does it make a copy?
-	list<Well> GetAllWells();
+	list<Well*> GetAllWells();
 	void AddWell(WellType wellType, double val);
 	bool TryRemoveWell(int id);
 	bool TryStartWell(int id);

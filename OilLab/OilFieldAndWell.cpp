@@ -13,15 +13,15 @@ using std::find_if;
 
 bool OilField::TryStartOrStopWell(int id, bool start)
 {
-	auto y = find_if(_wells.begin(), _wells.end(), [=](Well a) { return a.GetId() == id; });
+	auto y = find_if(_wells.begin(), _wells.end(), [=](Well* a) { return a->GetId() == id; });
 
 	if (y == _wells.end())
 		return false;
 
 	if (start)
-		y->Start();
+		(*y)->Start();//._Ptr->_Myval->Start();
 	else
-		y->Stop();
+		y._Ptr->_Myval->Stop();
 
 	return true;
 }
@@ -59,7 +59,7 @@ bool OilField::TryIncreaseWaterVolume(double val)
 	return false;
 }
 
-list<Well> OilField::GetAllWells()
+list<Well*> OilField::GetAllWells()
 {
 	return _wells;
 }
@@ -69,11 +69,11 @@ void OilField::AddWell(WellType wellType, double val)
 	//Well w(_idCounter++, wellType);
 	if (wellType == WellType::oil)
 	{
-		_wells.push_back(OilWell(_idCounter++, wellType, val));
+		_wells.push_back(new OilWell(_idCounter++, wellType, val));
 	}
 	if (wellType == WellType::water)
 	{
-		_wells.push_front(OutlWell(_idCounter++, wellType, val));
+		_wells.push_front(new OutlWell(_idCounter++, wellType, val));
 	}
 }
 
@@ -81,13 +81,16 @@ bool OilField::TryRemoveWell(int id)
 {
 	//_wells.remove_if(_wells.begin(), _wells.end(), my_predicate)
 
-	auto y = find_if(_wells.begin(), _wells.end(), [=](Well a) { return a.GetId() == id; });
+	auto y = find_if(_wells.begin(), _wells.end(), [=](Well* a) { return a->GetId() == id; });
 
 	if (y == _wells.end())
 		return false;
 	else
+	{
+		free((*y));
 		_wells.erase(y);
-	return false;
+	}
+	return true;
 }
 
 bool OilField::TryStartWell(int id)
@@ -102,15 +105,20 @@ bool OilField::TryStopWell(int id)
 
 void OilField::Work()
 {
-
+	double iterationWaterVol = 0.0;
 
 	for (auto& w : _wells)
 	{
-		double iterationWaterVol = 0.0;
-	
-		_wells.front().Work(this, &iterationWaterVol);
-		
-		w.Work(this, &iterationWaterVol);
+		w->Work(this, &iterationWaterVol);
+	}
+
+	if (iterationWaterVol > 0)
+	{
+		double o = fmin(_oilVolume, iterationWaterVol);
+		_oilVolume -= o;
+		iterationWaterVol -= o;
+		o = fmin(_gasVolume, iterationWaterVol);
+		_gasVolume -= o;
 	}
 }
 
