@@ -28,6 +28,7 @@ public:
 	double GetOilVolume();
 	double GetWaterVolume();
 	bool TryDecreaseOilVolume(double val);
+	bool TryDecreaseGasVolume(double val);
 	bool TryIncreaseWaterVolume(double val);
 
 	//does it make a copy?
@@ -64,6 +65,14 @@ class OilWell : public Well
 {
 public:
 	OilWell(int id, WellType wellType, double workRate = 67.0);
+
+	void Work(OilField* oF, double* iterationWaterV) override;
+};
+
+class GasWell : public Well
+{
+public:
+	GasWell(int id, WellType wellType, double workRate = 67.0);
 
 	void Work(OilField* oF, double* iterationWaterV) override;
 };

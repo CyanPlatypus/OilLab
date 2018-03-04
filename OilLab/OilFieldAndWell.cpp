@@ -49,6 +49,16 @@ bool OilField::TryDecreaseOilVolume(double val)
 	return false;
 }
 
+bool OilField::TryDecreaseGasVolume(double val)
+{
+	if (_gasVolume - val >= 0)
+	{
+		_gasVolume -= val;
+		return true;
+	}
+	return false;
+}
+
 bool OilField::TryIncreaseWaterVolume(double val)
 {
 	if (_capacity >= _waterVolume + val)
@@ -70,6 +80,10 @@ void OilField::AddWell(WellType wellType, double val)
 	if (wellType == WellType::oil)
 	{
 		_wells.push_back(new OilWell(_idCounter++, wellType, val));
+	}
+	if (wellType == WellType::gas)
+	{
+		_wells.push_back(new GasWell(_idCounter++, wellType, val));
 	}
 	if (wellType == WellType::water)
 	{

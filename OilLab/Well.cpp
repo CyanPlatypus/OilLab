@@ -72,6 +72,23 @@ void OilWell::Work(OilField* oF, double* iterationWaterV)
 	//	_volume += _workRate;
 }
 
+GasWell::GasWell(int id, WellType wellType, double workRate) :
+	Well(id, wellType, workRate)
+{	}
+
+void GasWell::Work(OilField* oF, double* iterationWaterV)
+{
+	if (_isOn)
+	{
+		double vol = fmin(fmin(oF->GetGasVolume(), _workRate), *iterationWaterV);
+		if (oF->TryDecreaseGasVolume(vol))
+		{
+			_volume += vol;
+			(*iterationWaterV) -= vol;
+		}
+	}
+}
+
 
 OutlWell::OutlWell(int id, WellType wellType, double workRate) :
 	Well(id, wellType, workRate)
